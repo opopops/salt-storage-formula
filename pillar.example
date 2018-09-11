@@ -1,0 +1,100 @@
+storage:
+
+  disk:
+
+    /dev/sdb:
+      label_type: msdos
+      partitions:
+        # 4GB partition
+        - start: 1
+          end: 4097
+          part_type: primary
+          format:
+            fs_type: ext4
+          mount:
+            mount_point: /opt
+        # 2GB partition
+        - start: 4098
+          end: 6146
+          part_type: primary
+          format:
+            fs_type: xfs
+          mount:
+            mount_point: /var/lib/data
+            opts:
+              - defaults
+
+    /dev/sdc:
+      label_type: gpt
+      partitions:
+        # full
+        - start: 1
+          end: 100%
+          part_type: primary
+          format:
+            fs_type: ext4
+          mount:
+            mount_point: /var/lib/space
+
+  lvm:
+
+    absent:
+      lvs:
+        lv_delete:
+          vg: vg_root
+          mount_point: /delete
+    present:
+      vgs:
+        vg_root:
+          devices:
+            - /dev/sda6
+          lvs:
+            lv_var:
+              size: 10G
+              resize: true
+              format:
+                fs_type: ext4
+            lv_data:
+              extents: '90%FREE'
+              resize: true
+              format:
+                fs_type: ext4
+              mount:
+                mount_point: /data
+                opts:
+                  - defaults
+
+        vg_data:
+          devices:
+            - /dev/sdb
+          lvs:
+            lv_users:
+              extents: '90%FREE'
+              resize: false
+              format:
+                fs_type: ext4
+              mount:
+                mount_point: /users
+
+  mount:
+    absent:
+      /opt: {}
+
+    present:
+      /var/lib/data:
+        device: /dev/sda1
+        fs_type: ext4
+
+      /var/lib/mysql:
+        device: /dev/sdb1
+        fs_type: xfs
+
+  swap:
+    partition:
+      engine: partition
+      device: /dev/vg0/swap
+
+    file:
+      engine: file
+      device: /swapfile
+      size: 1024
