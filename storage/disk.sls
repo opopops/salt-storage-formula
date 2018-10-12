@@ -24,9 +24,9 @@ storage_disk_probe_partions_{{ disk_name }}:
 
     {%- if partition.get('format', False) %}
       {%- if disk_name.startswith('mmc') %}
-        {%- set blockdev_name = {{ disk_name }}p{{ loop.index }} %}
+        {%- set blockdev_name = disk_name ~ 'p' ~ loop.index %}
       {%- else %}
-        {%- set blockdev_name = {{ disk_name }}{{ loop.index }} %}
+        {%- set blockdev_name = disk_name ~ loop.index %}
       {%- endif %}
 
 storage_disk_partition_{{ blockdev_name }}:
