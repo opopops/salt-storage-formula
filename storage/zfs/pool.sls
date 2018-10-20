@@ -1,5 +1,8 @@
 {% from "storage/map.jinja" import storage with context %}
 
+include:
+  - storage.zfs.install
+
 {%- for pool, params in storage.zfs.get('pools', {}) %}
 storage_zfs_pool_{{pool}}:
   zpool.present:
@@ -8,4 +11,6 @@ storage_zfs_pool_{{pool}}:
     - properties: {{params.get('properties', None)}}
     - filesystem_properties: {{params.get('filesystem_properties', None)}}
     - config: {{params.get('config', None)}}
+    - require:
+      - sls: storage.zfs.install
 {%- endfor %}
