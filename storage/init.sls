@@ -8,6 +8,9 @@ include:
   {%- if storage.get('lvm', False) %}
   - storage.lvm
   {%- endif %}
+  {%- if storage.get('zfs', False) %}
+  - storage.zfs
+  {%- endif %}
   {%- if storage.get('swap', False) %}
   - storage.swap
   {%- endif %}
