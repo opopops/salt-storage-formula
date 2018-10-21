@@ -4,9 +4,6 @@ storage_zfs_kernel_package:
   pkg.installed:
     - name: {{ storage.zfs_kernel_pkg  }}
     - unless: lsmod | grep zfs
-  cmd.run:
-    - name: modprobe zfs
-    - unless: lsmod | grep zfs
 
 storage_zfs_packages:
   pkg.installed:
@@ -17,6 +14,6 @@ storage_zfs_packages:
 storage_zfs_modprobe:
   cmd.run:
     - name: modprobe zfs
-    - unless: lsmod|grep zfs
+    - unless: lsmod | grep zfs
     - require:
       - pkg: storage_zfs_packages
