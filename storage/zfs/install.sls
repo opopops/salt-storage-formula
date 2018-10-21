@@ -1,7 +1,7 @@
 {% from "storage/map.jinja" import storage with context %}
 
 storage_zfs_kernel_package:
-  pkg.install:
+  pkg.installed:
     - name: {{ storage.zfs_kernel_pkg  }}
     - unless: lsmod | grep zfs
 
