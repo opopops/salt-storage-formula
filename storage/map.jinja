@@ -16,7 +16,8 @@ that differ from what is in defaults.yaml
     'Debian': {
         'pkgs': ['parted', 'xfsprogs'],
         'lvm_pkgs': ['lvm2'],
-        'zfs_pkgs': ['zfs-dkms'],
+        'zfs_pkgs': ['zfs-initramfs', 'zfs-zed', 'zfsutils-linux'],
+        'zfs_kernel_pkg': 'zfs-dkms',
         'blockdev_root_path': '/dev/mapper'
     },
 }
