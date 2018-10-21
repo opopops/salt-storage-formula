@@ -2,12 +2,12 @@
 
 storage_zfs_kernel_package:
   pkg.installed:
-    - name: {{ storage.zfs_kernel_pkg  }}
+    - name: {{ storage.zfs_kernel_pkg }}
     - unless: lsmod | grep zfs
 
 storage_zfs_packages:
   pkg.installed:
-    - pkgs: {{ storage.zfs_pkgs  }}
+    - pkgs: {{ storage.zfs_pkgs }}
     - require:
       - pkg: storage_zfs_kernel_package
 
