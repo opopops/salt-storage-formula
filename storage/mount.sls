@@ -3,20 +3,20 @@
 include:
   - storage.install
 
-{%- for mount_point, params in storage.mount.get('absent', {}).items() %}
-storage_mount_{{mount_point}}_absent:
+{%- for name, params in storage.mount.get('absent', {}).items() %}
+storage_mount_{{name}}_absent:
   mount.unmounted:
-    - name: {{mount_point}}
+    - name: {{name}}
     {%- if params.get('device', False) %}
     - device: {{params.device}}
     {%- endif %}
     - persist: {{ params.get('persist', True) }}
 {%- endfor %}
 
-{%- for mount_point, params in storage.mount.get('present', {}).items() %}
-storage_mount_{{mount_point}}_present:
+{%- for name, params in storage.mount.get('present', {}).items() %}
+storage_mount_{{name}}_present:
   mount.mounted:
-    - name: {{mount_point}}
+    - name: {{name}}
     - device: {{params.device}}
     - fstype: {{params.fs_type}}
     - mkmnt: True
