@@ -12,7 +12,7 @@ include:
 
 storage_lvm_vg_{{vg_name}}_lv_{{lv_name}}_mount:
   mount.mounted:
-    - name: {{lv_params.mount.mount_point}}
+    - name: {{lv_params.mount.name}}
     - device: {{storage.blockdev_root_path|path_join(vg_name) ~ '-' ~ lv_name}}
     - fstype: {{lv_params.format.fs_type}}
     - mkmnt: True

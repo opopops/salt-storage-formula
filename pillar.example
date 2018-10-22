@@ -12,7 +12,7 @@ storage:
           format:
             fs_type: ext4
           mount:
-            mount_point: /opt
+            name: /opt
         # 2GB partition
         - start: 4098
           end: 6146
@@ -20,7 +20,7 @@ storage:
           format:
             fs_type: xfs
           mount:
-            mount_point: /var/lib/data
+            name: /var/lib/data
             opts:
               - defaults
 
@@ -34,7 +34,7 @@ storage:
           format:
             fs_type: ext4
           mount:
-            mount_point: /var/lib/space
+            name: /var/lib/space
 
   lvm:
 
@@ -42,7 +42,7 @@ storage:
       lvs:
         lv_delete:
           vg: vg_root
-          mount_point: /delete
+          name: /delete
 
     present:
       vgs:
@@ -61,7 +61,7 @@ storage:
               format:
                 fs_type: ext4
               mount:
-                mount_point: /data
+                name: /data
                 opts:
                   - defaults
 
@@ -75,7 +75,7 @@ storage:
               format:
                 fs_type: ext4
               mount:
-                mount_point: /users
+                name: /users
 
   zfs:
     pools:
