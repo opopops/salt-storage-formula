@@ -3,36 +3,36 @@
 include:
   - storage.install
 
-{%- for disk_name, disk in storage.disk.items() %}
-  {%- set disk_name = disk.name|default(disk_name) %}
+{%- for device, params in storage.disk.items() %}
+  {%- set device = params.device|default(device) %}
 
-storage_disk_label_{{ disk_name }}:
+storage_disk_label_{{ device }}:
   module.run:
     - partition.mklabel:
-      - device: {{ disk_name }}
-      - label_type: {{ disk.get('label_type', 'msdos') }}
-    - unless: "fdisk -l {{ disk_name }} | grep -i 'Disklabel type: {{ disk.get('label_type', 'dos') }}'"
+      - device: {{ device }}
+      - label_type: {{ params.get('label_type', 'msdos') }}
+    - unless: "fdisk -l {{ device }} | grep -i 'Disklabel type: {{ params.get('label_type', 'dos') }}'"
     - require:
       - pkg: storage_pkgs
 
-storage_disk_probe_partions_{{ disk_name }}:
+storage_disk_probe_partions_{{ device }}:
   module.run:
     - partition.probe:
-      - {{ disk_name }}
+      - {{ device }}
 
-  {%- for partition in disk.get('partitions', []) %}
+  {%- for partition in params.get('partitions', []) %}
 
     {%- if partition.get('format', False) %}
-      {%- if disk_name.startswith('/dev/mmc') %}
-        {%- set blockdev_name = disk_name ~ 'p' ~ loop.index %}
+      {%- if device.startswith('/dev/mmc') %}
+        {%- set blockdev_name = device ~ 'p' ~ loop.index %}
       {%- else %}
-        {%- set blockdev_name = disk_name ~ loop.index %}
+        {%- set blockdev_name = device ~ loop.index %}
       {%- endif %}
 
 storage_disk_partition_{{ blockdev_name }}:
   module.run:
     - partition.mkpart:
-      - device: {{ disk_name }}
+      - device: {{ device }}
       - part_type: {{ partition.get('part_type', 'primary') }}
       {%- if partition.fs_type is defined %}
       - fs_type: {{ partition.fs_type }}
@@ -41,10 +41,10 @@ storage_disk_partition_{{ blockdev_name }}:
       - end: {{ partition.get('end') }}
     - unless: "blkid {{ blockdev_name }}"
     - require:
-      - module: storage_disk_label_{{ disk_name }}
+      - module: storage_disk_label_{{ device }}
       - pkg: storage_pkgs
     - require_in:
-      - module: storage_disk_probe_partions_{{ disk_name }}
+      - module: storage_disk_probe_partions_{{ device }}
 
 storage_disk_mkfs_partition_{{ blockdev_name }}:
   blockdev.formatted:
@@ -52,15 +52,15 @@ storage_disk_mkfs_partition_{{ blockdev_name }}:
     - fs_type: {{ partition.format.fs_type }}
     - force: {{ partition.format.get('force', False) }}
     - require:
-      - module: storage_disk_probe_partions_{{ disk_name }}
+      - module: storage_disk_probe_partions_{{ device }}
       - module: storage_disk_partition_{{ blockdev_name }}
 
       {%- if partition.get('mount', False) %}
-storage_disk_mount_{{partition.mount.mount_point}}:
+storage_disk_mount_{{partition.mount.name}}:
   mount.mounted:
-    - name: {{partition.mount.mount_point}}
-    - device: {{ blockdev_name }}
-    - fstype: {{partition.format.fs_type}}
+    - name: {{ partition.mount.name }}
+    - device: {{ partition.mount.get('device', blockdev_name) }}
+    - fstype: {{ partition.format.fs_type }}
     - mkmnt: True
     - persist: {{ partition.mount.get('persist', True) }}
     - opts: {{ partition.mount.get('opts', ['defaults']) }}
