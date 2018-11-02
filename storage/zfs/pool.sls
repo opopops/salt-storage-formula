@@ -3,7 +3,7 @@
 include:
   - storage.zfs.install
 
-{%- for pool, params in storage.zfs.get('pools', {}) %}
+{%- for pool, params in storage.zfs.get('pools', {}).items() %}
 storage_zfs_pool_{{pool}}:
   zpool.present:
     - name: {{pool}}
