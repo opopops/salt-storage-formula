@@ -26,7 +26,7 @@ storage_set_swap_partition_{{ swap.device }}:
 
 storage_create_swap_file_{{ swap.device }}:
   cmd.run:
-  - name: 'dd if=/dev/zero of={{ swap.device }} bs=1048576 count={{ swap.size }} && chmod 0600 {{ swap.device }}'
+  - name: 'dd if=/dev/zero of={{ swap.device }} bs=1048576 count={{ swap.size }} oflag=direct && chmod 0600 {{ swap.device }}'
   - creates: {{ swap.device }}
 
 storage_set_swap_file_{{ swap.device }}:
